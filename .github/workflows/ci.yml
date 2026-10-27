@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler: [gcc, clang]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install compiler
+        if: matrix.compiler == 'clang'
+        run: sudo apt-get update && sudo apt-get install -y clang
+      - name: Configure
+        env:
+          CXX: ${{ matrix.compiler == 'clang' && 'clang++' || 'g++' }}
+        run: cmake -S . -B build -DMARTINGALE_BUILD_TESTS=ON
+      - name: Build
+        run: cmake --build build --parallel
+      - name: Test
+        run: ctest --test-dir build --output-on-failure

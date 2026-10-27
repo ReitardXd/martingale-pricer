@@ -1,0 +1,3 @@
+# Control variates
+
+TODO: derivation
